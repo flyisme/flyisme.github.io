@@ -36,7 +36,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       hexo-theme-ayer:
-        specifier: ^1.9.7-0
+        specifier: 1.9.7-0
         version: 1.9.7-0
       hexo-theme-landscape:
         specifier: ^1.1.0
