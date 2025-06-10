@@ -36,15 +36,11 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       hexo-theme-ayer:
-        specifier: 1.9.7-0
+        specifier: ^1.9.7-0
         version: 1.9.7-0
       hexo-theme-landscape:
         specifier: ^1.1.0
         version: 1.1.0
-    devDependencies:
-      hexo-theme-fluid:
-        specifier: ^1.9.8
-        version: 1.9.8(nunjucks@3.2.4(chokidar@3.6.0))
 
 packages:
 
@@ -458,12 +454,6 @@ packages:
 
   hexo-theme-ayer@1.9.7-0:
     resolution: {integrity: sha512-E25b6PufcYILxIkKd1W4+N3LMpVlVsNEvHCoxeBs5E2bjqF2M7yI1PPKFCf9/rMuwsMyRxRc3icbBt9tMb+Rfg==}
-
-  hexo-theme-fluid@1.9.8:
-    resolution: {integrity: sha512-+HUx8xrBA2WWgJYMhlCy5L69LLgAL8PjsLIyIbh81Ftc0J71V69K04Zqv270VjRSs38rx9djeQPrgidtMdnh3g==}
-    engines: {node: '>=8.10.0'}
-    peerDependencies:
-      nunjucks: ^3.0.0
 
   hexo-theme-landscape@1.1.0:
     resolution: {integrity: sha512-nszjixBEiEDZjf7glAGbHg0nKGHZdUDwzFVVdRDeu4FeHfGcY5CZNl9sF4vSligjnD8IwFXpDfx5E+GRmNKvWg==}
@@ -1378,10 +1368,6 @@ snapshots:
       - supports-color
 
   hexo-theme-ayer@1.9.7-0: {}
-
-  hexo-theme-fluid@1.9.8(nunjucks@3.2.4(chokidar@3.6.0)):
-    dependencies:
-      nunjucks: 3.2.4(chokidar@3.6.0)
 
   hexo-theme-landscape@1.1.0: {}
 
