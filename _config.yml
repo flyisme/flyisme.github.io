@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 小飞侠的小站
+title: 小飞侠的博客
 subtitle: '昨夜西风凋碧树。独上高楼，望尽天涯路。'
 description: ''
 keywords:
@@ -50,7 +50,7 @@ highlight:
   auto_detect: false
   tab_replace: ''
   wrap: true
-  hljs: true
+  hljs: false
 prismjs:
   preprocess: true
   line_number: true
