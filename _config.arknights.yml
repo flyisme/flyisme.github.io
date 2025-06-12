@@ -78,16 +78,9 @@ archives:
 # 搜索
 search:
   enable: true
-  content: true # 若为 false，仅可搜索标题及 metadata
-  preload: false # 自动加载搜索数据
-  # 设为 post 时，仅可搜索 post 页面
-  # 设为 page 时，仅可搜索非 post 页面
-  # 设为 all 时，可搜索全部页面
   field: post
-  # 设为 html 时，依据 html 文件生成
-  # 设为 striptags 时，滤除 html tag
-  # 设为 raw 时，依据 markdown 源文件生成
-  format: striptags
+  content: true
+  format: raw
 
 # 背景音乐
 bgm:
