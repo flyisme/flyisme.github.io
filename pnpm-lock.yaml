@@ -32,6 +32,9 @@ importers:
       hexo-renderer-marked:
         specifier: ^7.0.1
         version: 7.0.1
+      hexo-renderer-pug:
+        specifier: ^3.0.0
+        version: 3.0.0
       hexo-renderer-stylus:
         specifier: ^3.0.1
         version: 3.0.1
@@ -531,6 +534,10 @@ packages:
   hexo-renderer-marked@7.0.1:
     resolution: {integrity: sha512-H9IMnDuhjAL24NjWJuqQG0Utdw09159AI531Dbs7jSqmXSXVImoA7SeWIt4XLDRKr1nfWwn+eDziWo4UT6f1fA==}
     engines: {node: '>=18'}
+
+  hexo-renderer-pug@3.0.0:
+    resolution: {integrity: sha512-PmbLx6VkNv+mPLOe97OC4F8iTzTuj665dSYN7bZKArd4M/q7gb2tNs29VGuAOC50i9tvWY2f+tPQimf0GZ9Hyw==}
+    engines: {node: '>=12.4.0'}
 
   hexo-renderer-stylus@3.0.1:
     resolution: {integrity: sha512-cFm8ZwShBBeFcQwOXc8EK7lIZnSYVD6OJykdL4GBw99hxc4eD5Hlsi32nRzE8sgKv00jhX1s9Da3GVVFMPAVQg==}
@@ -1692,6 +1699,10 @@ snapshots:
       - canvas
       - supports-color
       - utf-8-validate
+
+  hexo-renderer-pug@3.0.0:
+    dependencies:
+      pug: 3.0.3
 
   hexo-renderer-stylus@3.0.1:
     dependencies:

@@ -152,10 +152,11 @@ mathjax:
   enable: false
   version: "2.6.1"
 
+
 # 在 `<head>` 标签内引入 CSS 样式表
-# 支持直接引入短片段，用 "{ }" 包裹（包括引号），例： - "{a {color: #2bf}}"
 stylesheets:
+  - //unpkg.com/@highlightjs/cdn-assets@11.4.0/styles/atom-one-dark-reasonable.min.css
 
 # 在 `<body>` 尾部引入 JavaScript 脚本
-# 支持直接引入短片段，用 "{ }" 包裹（包括引号），例： - "{var test='test'}"
 scripts:
+  - //unpkg.com/@highlightjs/cdn-assets@11.4.0/highlight.min.js
