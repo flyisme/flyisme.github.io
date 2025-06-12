@@ -27,7 +27,8 @@
     "hexo-theme-landscape": "^1.1.0",
     "hexo-util": "^3.3.0",
     "hexo-generator-searchdb": "^1.4.1",
-    "pug": "^3.0.3"
+    "pug": "^3.0.3",
+    "hexo-browsersync": "^0.3.0"
   },
   "devDependencies": {
     "hexo-theme-ayer": "1.9.7-0"
