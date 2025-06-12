@@ -5,6 +5,7 @@ favicon:
 
 # canvas 动态背景
 canvas_dust: true
+language: zh-CN
 
 # 默认颜色模式 dark / dark-only / light / light-only / auto
 # dark 暗色模式
