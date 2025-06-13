@@ -17,6 +17,9 @@ importers:
       hexo-browsersync:
         specifier: ^0.3.0
         version: 0.3.0
+      hexo-filter-mermaid-diagrams:
+        specifier: ^1.0.5
+        version: 1.0.5
       hexo-generator-archive:
         specifier: ^2.0.0
         version: 2.0.0
@@ -401,6 +404,10 @@ packages:
   decimal.js@10.5.0:
     resolution: {integrity: sha512-8vDa8Qxvr/+d94hSh5P3IJwI5t8/c0KsMp+g8bNw9cY2icONa5aPfvKeieW1WlG0WQYwwhJ7mjui2xtiePQSXw==}
 
+  deep-assign@2.0.0:
+    resolution: {integrity: sha512-2QhG3Kxulu4XIF3WL5C5x0sc/S17JLgm1SfvDfIRsR/5m7ZGmcejII7fZ2RyWhN0UWIJm0TNM/eKow6LAn3evQ==}
+    engines: {node: '>=0.10.0'}
+
   deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
@@ -654,6 +661,9 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  hexo-filter-mermaid-diagrams@1.0.5:
+    resolution: {integrity: sha512-/IkIMKn4V7PBAzMJGNDPSoBFlv1JGvIELXm5AWkR8N5N44kDTNJLtabb4h095UhZQIXOrF9zA1WYhi6wrWLW5Q==}
+
   hexo-front-matter@4.2.1:
     resolution: {integrity: sha512-sJJI0GNmejYiwBvgnGRKn5V3sbODB4dNPr8jyw2Qp0PRHr4Uuyv8iyxw6WfK3+T7yvzYvJOh+tZ7jnwr2BYARA==}
     engines: {node: '>=14'}
@@ -819,6 +829,10 @@ packages:
   is-number@7.0.0:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
+
+  is-obj@1.0.1:
+    resolution: {integrity: sha512-l4RyHgRqGN4Y3+9JHVrNqO+tN0rV5My76uW5/nuO4K1b6vw5G8d/cmFjP9tRfEsdhZNt0IFdZuK/c2Vr4Nb+Qg==}
+    engines: {node: '>=0.10.0'}
 
   is-plain-object@5.0.0:
     resolution: {integrity: sha512-VRSzKkbMm5jMDoKLbltAkFQ5Qr7VDiTFGXxYFXXowVj387GeGNOCsOH6Msy00SGZ3Fp84b1Naa1psqgcCIEP5Q==}
@@ -1936,6 +1950,10 @@ snapshots:
 
   decimal.js@10.5.0: {}
 
+  deep-assign@2.0.0:
+    dependencies:
+      is-obj: 1.0.1
+
   deepmerge@4.3.1: {}
 
   define-lazy-prop@2.0.0: {}
@@ -2240,6 +2258,10 @@ snapshots:
       resolve: 1.22.10
       tildify: 2.0.0
 
+  hexo-filter-mermaid-diagrams@1.0.5:
+    dependencies:
+      deep-assign: 2.0.0
+
   hexo-front-matter@4.2.1:
     dependencies:
       js-yaml: 4.1.0
@@ -2465,6 +2487,8 @@ snapshots:
       lodash.isfinite: 3.3.2
 
   is-number@7.0.0: {}
+
+  is-obj@1.0.1: {}
 
   is-plain-object@5.0.0: {}
 

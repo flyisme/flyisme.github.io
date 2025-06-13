@@ -60,6 +60,13 @@ block content
         != page.more
       #paginator!= paginator()
     #post-footer
+      if theme.mermaid.enable == true
+          script(type='text/javascript', id='maid-script' mermaidoptioins=theme.mermaid.options src='https://unpkg.com/mermaid@'+ theme.mermaid.version + '/dist/mermaid.min.js' + '?v=' + theme.version)
+          script.
+            if (window.mermaid) {
+              var options = JSON.parse(document.getElementById('maid-script').getAttribute('mermaidoptioins'));
+              mermaid.initialize(options);
+            }
       if prev || next
         - let fix = ""
         if prev === undefined
@@ -110,7 +117,6 @@ block content
           #waline
         if theme.artalk.enable === true
           #artalk 
-
 block aside-block
   - 
     const encrypted = page.encrypt || page.password
