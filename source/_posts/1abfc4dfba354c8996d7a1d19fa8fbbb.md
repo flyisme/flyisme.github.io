@@ -1,13 +1,13 @@
 ---
 layout: post
-title: Binder驱动 学习
+title: Binder驱动
 abbrlink: 1abfc4dfba354c8996d7a1d19fa8fbbb
 tags: []
 categories:
   - framework
   - binder
 date: 1755140447895
-updated: 1756263112501
+updated: 1756440961054
 ---
 
 ![ac9e5f7b3ed0c06c14d3f9ce50d3e726.png](/resources/a893b84c9cd44d84be231e0b41c0999e.png)
