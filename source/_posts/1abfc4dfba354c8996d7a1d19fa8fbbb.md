@@ -5,8 +5,9 @@ abbrlink: 1abfc4dfba354c8996d7a1d19fa8fbbb
 tags: []
 categories:
   - framework
+  - binder
 date: 1755140447895
-updated: 1755248506627
+updated: 1756263112501
 ---
 
 ![ac9e5f7b3ed0c06c14d3f9ce50d3e726.png](/resources/a893b84c9cd44d84be231e0b41c0999e.png)
@@ -14,13 +15,21 @@ updated: 1755248506627
 //android-msm-crosshatch-4.9-android11\
 // msm-google/drivers/android/binder.c
 
+### 前置
+
+- BC\_TRANSACTION 进程向Binder驱动发送数据 BC开头，B代表Binder，而C代表Command
+  - Binder驱动在收到BC\_TRANSACTION之后，会将分配内存，将请求数据保存到所分配的内存中。
+- BR\_xxxx: Binder驱动回复:R表示Reply
+  ![267dd03fb4e5c9959197201b1a99db7f.png](/resources/8eb9b42edbd04d1cb81d213df60f63fc.png)
+
 ```cpp
+//内核中 描述Binder上下文信息,每有一个程序打开该文件节点时；Binder驱动中都会新建一个binder_proc对象来保存该进程的上下文信息。
 struct binder_proc {
     struct hlist_node proc_node;
-    struct rb_root threads; //binder 线程
-    struct rb_root nodes;// binder 实现
-    struct rb_root refs_by_desc;// handl 遍历
-    struct rb_root refs_by_node;
+    struct rb_root threads; //binder线程 池
+    struct rb_root nodes;// binder_node组成的红黑树,的实现(服务端 BbBinder)
+    struct rb_root refs_by_desc;// handl 遍历 binder_ref(客户端 BpBinder)
+    struct rb_root refs_by_node;//
     struct list_head waiting_threads;
     int pid;
     struct task_struct *tsk;
@@ -43,6 +52,48 @@ struct binder_proc {
     struct binder_context *context;
     spinlock_t inner_lock;
     spinlock_t outer_lock;
+};
+//服务端实现
+struct binder_node {
+	int debug_id;
+	struct binder_work work;
+	union {
+		struct rb_node rb_node;			 // 如果这个Binder实体还在使用，则将该节点链接到proc->nodes中。
+		struct hlist_node dead_node;	 // 如果这个Binder实体所属的进程已经销毁，而这个Binder实体又被其它进程所引用，则这个Binder实体通过dead_node进入到一个哈希表中去存放
+	};
+	struct binder_proc *proc;			//该Binder实体所属的Binder进程
+	struct hlist_head refs;				//该Binder实体的所有Binder引用组成的链表
+	int internal_strong_refs;
+	int local_weak_refs;
+	int local_strong_refs;
+	binder_uintptr_t ptr;				// Binder实体在用户空间的地址(为Binder实体对应的Server在用户空间的本地Binder的引用)
+	binder_uintptr_t cookie;			// Binder实体在用户空间的其他数据(为Binder实体对应的Server在用户空间的本地Binder自身)
+	unsigned has_strong_ref:1;
+	unsigned pending_strong_ref:1;
+	unsigned has_weak_ref:1;
+	unsigned pending_weak_ref:1;
+	unsigned has_async_transaction:1;
+	unsigned accept_fds:1;
+	unsigned min_priority:8;
+	struct list_head async_todo;
+};
+
+// 客户端代理
+struct binder_ref {
+	/* Lookups needed: */
+	/*   node + proc => ref (transaction) */
+	/*   desc + proc => ref (transaction, inc/dec ref) */
+	/*   node => refs + procs (proc exit) */
+	int debug_id;
+	struct rb_node rb_node_desc;	//关联到所属进程binder_proc->refs_by_desc红黑树中
+	struct rb_node rb_node_node;	// 关联到所属进程binder_proc->refs_by_node红黑树中
+	struct hlist_node node_entry;	// 关联到binder_node->refs哈希表中
+	struct binder_proc *proc;		//该Binder引用所属的Binder进程
+	struct binder_node *node;		//该Binder引用对应的Binder实体
+	uint32_t desc;					//描述
+	int strong;
+	int weak;
+	struct binder_ref_death *death;
 };
 
 
@@ -665,8 +716,72 @@ binder_enqueue_thread_work_ilocked(struct binder_thread *thread,
 ![ba252354b91b87a71e8e84e937c358e5.png](/resources/b8857e33f3b0480a93abbd6948af0ee4.png)
 
 ![f611e2d84c0464f6248f81fb9ba93618.png](/resources/42e3762b43644c0d801e7e46b5cfee15.png)
+
+```xml
+客户端进程                    Binder驱动                    ServiceManager进程
+┌─────────────┐             ┌─────────────┐               ┌─────────────┐
+│             │ 1.getService│             │               │             │
+│             │ handle=0    │特殊处理      │ 2.转发到SM     │             │
+│             │────────────►│handle=0     │──────────────►│checkService │
+│             │             │直接找到SM    │               │             │
+│             │             │的binder_node │               │             │
+│             │             │             │ 3.SM返回服务   │在服务列表中  │
+│             │             │             │的handle=N     │查找并返回    │
+│             │             │             │◄──────────────│handle       │
+│             │ 4.驱动处理   │             │               │             │
+│             │readStrongBind│为客户端创建  │               │             │
+│             │er           │binder_ref   │               │             │
+│             │             │handle=N     │               │             │
+│             │ 5.用户空间    │             │               │             │
+│  BpBinder   │创建BpBinder  │             │               │             │
+│ (handle=N)  │◄────────────│             │               │             │
+└─────────────┘             └─────────────┘               └─────────────┘
+
+
+.............
+全局 Binder 上下文
+┌─────────────────────────────────────┐
+│ binder_context                      │
+│ ┌─────────────────────────────────┐ │
+│ │ binder_context_mgr_node ────────┼─┼──┐
+│ └─────────────────────────────────┘ │  │
+└─────────────────────────────────────┘  │
+                                         │
+ServiceManager 进程                       │
+┌─────────────────────────────────────┐  │
+│ binder_proc (ServiceManager)        │  │
+│ ┌─────────────────────────────────┐ │  │
+│ │ nodes 红黑树                    │ │  │
+│ │ ┌─────────────────────────────┐ │ │  │
+│ │ │ binder_node ◄───────────────┼─┼─┼──┘
+│ │ │ (ptr=0, cookie=0)           │ │ │
+│ │ │ 这就是 SM 的实体对象         │ │ │
+│ │ └─────────────────────────────┘ │ │
+│ └─────────────────────────────────┘ │
+│ refs_by_desc: (空或其他服务的引用)   │
+└─────────────────────────────────────┘
+
+客户端进程A
+┌─────────────────────────────────────┐
+│ binder_proc (客户端A)               │
+│ ┌─────────────────────────────────┐ │
+│ │ refs_by_desc 红黑树              │ │
+│ │ ┌─────────────────────────────┐ │ │
+│ │ │ handle=0 -> binder_ref      │ │ │
+│ │ │ ┌─────────────────────────┐ │ │ │
+│ │ │ │ node ───────────────────┼─┼─┼─┼──┐
+│ │ │ │ desc=0                  │ │ │ │  │
+│ │ │ └─────────────────────────┘ │ │ │  │
+│ │ └─────────────────────────────┘ │ │  │
+│ └─────────────────────────────────┘ │  │
+└─────────────────────────────────────┘  │
+                                         │
+        指向同一个 binder_node ◄──────────┘
+
+```
+
 ![433508565013c09e38afd31c4e367b6a.png](/resources/cbb05969daef4c85ae96580d040c4631.png)
 
 > 短时间内多次调用,会加到async\_todo队列,可能会导致目标进程Binder内存耗尽(1M/2). 导致后续调用失败(如果目标进程 Binder操作比较耗时), 需要特别注意
 
-参考:<https://blog.csdn.net/tkwxty/article/details/102824924>
+参考:<https://blog.csdn.net/tkwxty/article/details/102824924> <https://blog.csdn.net/tkwxty/article/details/102843741>
