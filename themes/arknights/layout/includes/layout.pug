@@ -56,3 +56,52 @@ html(lang=config.language theme-mode=theme.color)
             script!=url
           else
             script(defer src=url)
+  
+  // 在 layout.pug 的 script 部分添加
+script.
+  // 页面类型检测和脚本执行
+  function executePageScripts() {
+    const currentPath = window.location.pathname
+    
+    // 检测是否为 post 页面
+    if (document.querySelector('#post-bg') || currentPath.includes('/posts/')) {
+      console.log("检测到 Post 页面，执行相关脚本--->>>")
+      
+      // Mermaid 处理
+      if (typeof mermaid !== 'undefined') {
+        const mermaidElements = document.querySelectorAll('.mermaid')
+        if (mermaidElements.length > 0) {
+          mermaid.init()
+        }
+      }
+      console.log("Post 页面脚本执行完成--->>>")
+    }
+  }
+  
+  // 监听各种页面变化事件
+  document.addEventListener('DOMContentLoaded', executePageScripts)
+  document.addEventListener('pjax:complete', executePageScripts)
+  document.addEventListener('turbo:load', executePageScripts)
+  
+  // MutationObserver 监听 DOM 变化
+  if (window.MutationObserver) {
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          // 检查是否添加了新的内容
+          for (let node of mutation.addedNodes) {
+            if (node.nodeType === 1 && (node.id === 'post-bg' || node.querySelector('#post-bg'))) {
+              setTimeout(executePageScripts, 100) // 延迟执行确保 DOM 完全加载
+              break
+            }
+          }
+        }
+      })
+    })
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    })
+  }
+
